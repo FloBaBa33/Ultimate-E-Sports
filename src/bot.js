@@ -1,5 +1,6 @@
 require ( "dotenv" ).config ()
 const { Client, IntentsBitField, EmbedBuilder, ChannelType } = require ( "discord.js" )
+const { writeFile } = require ( "fs" )
 
 const client = new Client ({
     intents: [
@@ -27,6 +28,15 @@ client.on ( "ready", async ( bot ) => {
     console.log ( "ready" )
     console.log ( bot.user.username )
     //TODO: create Commands
+})
+
+client.on ( "error", async ( error) => {
+    const now = new Date ()
+    const fileName = `Error_${ now.getFullYear ()}-${ now.getMonth () + 1 }-${ now.getDate ()}_${ now.getHours ()}-${ now.getMinutes ()}-${ now.getSeconds ()}`
+    writeFile ( `errors/${ fileName }`, `Error Name: "${ error.name }"\nError Message: "${ error.message }"`, function ( err ) {
+        if ( err ) throw err
+        console.log ( "Error Log created" )
+    })
 })
 
 client.on ( "messageDelete", async ( message ) => {
