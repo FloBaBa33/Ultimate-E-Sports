@@ -6,7 +6,8 @@ const client = new Client ({
         IntentsBitField.Flags.GuildMembers,
         IntentsBitField.Flags.Guilds,
         IntentsBitField.Flags.GuildPresences,
-        IntentsBitField.Flags.MessageContent
+        IntentsBitField.Flags.MessageContent,
+        IntentsBitField.Flags.GuildVoiceStates
     ]
 })
 
@@ -227,7 +228,6 @@ client.on ( "channelDelete", async ( channel ) => {
 
 client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {
     const logChannel = await member.guild.channels.fetch ( "1232776344044179536" )
-    const loggingEmbed = new EmbedBuilder ()
     .setColor ( "Yellow" )
     if ( oldChannel.type === ChannelType.GuildCategory ) {
         if ( oldChannel.name !== newChannel.name ) {
@@ -355,7 +355,36 @@ client.on ( "guildUpdate", async ( oldGuild, newGuild ) => {
     } else return
 })
 
+client.on ( "voiceStateUpdate", async ( oldState, newState ) => {
+    const logChannel = await member.guild.channels.fetch ( "1233003101007380561" )
+    if ( !oldState.channel ) {
+        const loggingEmbed = new EmbedBuilder ()
+        .setColor ( "Green" )
+        .setTitle ( "Member Joined a Voice Channel" )
+        .setDescription ( `${ newState.member } joined the Voice Channel: ${ newState.channel }` )
+        await logChannel.send ({ embeds: [ loggingEmbed ]})
+    }
+    else if ( !newState.channel ) {
+        const loggingEmbed = new EmbedBuilder ()
+        .setColor ( "Red" )
+        .setTitle ( "Member Left a Voice Channel" )
+        .setDescription ( `${ oldState.member } left the Voice Channel: ${ oldState.channel }` )
+        await logChannel.send ({ embeds: [ loggingEmbed ]})
+    }
+    else if ( oldState.channel !== newState.channel ) {
+        const loggingEmbed = new EmbedBuilder ()
+        .setColor ( "Yellow" )
+        .setTitle ( "Member Moved to a different Voice Channel" )
+        .setDescription ( `${ oldState.member } switched Voice Channels` )
+        .addFields ([
+            { name: "previous Channel", value: oldState.channel.name, inline: true },
+            { name: "new Channel", value: newState.channel.name, inline: true },
+        ])
+        await logChannel.send ({ embeds: [ loggingEmbed ]})
+    }
+    else return
+})
+
 //TODO: reaction Roles
 //TODO: Suggestions
 //TODO: Embed Builder
-//TODO: VC Logging
