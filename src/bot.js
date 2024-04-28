@@ -1,6 +1,7 @@
 require ( "dotenv" ).config ()
-const { Client, IntentsBitField, EmbedBuilder, ChannelType } = require ( "discord.js" )
+const { Client, IntentsBitField, EmbedBuilder, ChannelType, ApplicationCommandOptionType, CommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require ( "discord.js" )
 const { writeFile } = require ( "fs" )
+const { deserialize } = require("v8")
 
 const client = new Client ({
     intents: [
@@ -21,6 +22,48 @@ const client = new Client ({
  */
 async function wait ( ms ) { return new Promise ( res => setTimeout ( res, ms )) }
 
+const embeds = {
+    "rules_1": {
+        embed: new EmbedBuilder ()
+        .setTitle ( "Die Regeln dieses Servers" )
+        .setColor ( "Blue" )
+        .addFields ([
+            { name: "__$1__", value: "Respektvoller Umgang mit allen!\nBelästigung, Sexismus oder Rassismus werden nicht toleriert und können mit einem Ban bestraft werden!", inline: false },
+            { name: "__$2__", value: "Ohne Berechtigung von unserem Staffteam darf keine Eigenwerbung in Allgemeinen Chats betrieben werden!", inline: false },
+            { name: "__$3__", value: "__Keine anstößigen Inhalte teilen.__\nDazu zählen Texte, Bilder oder Links mit Nacktheit, Sex, schwerer Gewalt oder anderen grafisch verstörenden Inhalten.", inline: false },
+            { name: "__$4__", value: "Das Aufnehmen von Nutzern in den Voice-Channels (egal ob Foto-, Video- oder Tonaufnahmen) ist verboten, außer es wurde klar und deutlich eingewilligt. Ebenso ist das Versenden von eigenen privaten Daten, sowie von anderen Usern, nicht gestattet.", inline: false },
+            { name: "__$5__", value: "Störgeräusche , Stimmverzerrer oder sonstige Stör-Arten eines angenehmen Miteinanders sind untersagt.\nAusgenommen hier ist das Soundboard von Discord solange andere User nicht belästigt werden!", inline: false },
+            { name: "__$6__", value: "Dem Staffteam ist mit Respekt zu begegnen und Ihren Anweisungen sind folge zu leisten.", inline: false },
+            { name: "__$7__", value: "Wenn du etwas siehst, das gegen die Regeln verstößt, oder wodurch du dich nicht sicher fühlst, dann benachrichtige die Mitarbeiter! Wir möchten, dass dieser Server ein Ort ist, an dem sich jeder Willkommen & Sicher fühlen soll.", inline: false },
+            { name: "__$8__", value: "Zusätzlich zu den oben genannten Regeln gelten natürlich auch die [allgemainen Discord-Regeln](https://discord.com/guidelines).", inline: false },
+        ])
+        .setFooter ({ text: "Den Serverregeln wird automatisch mit dem Beitritt des Servers zugestimmt. Wir behalten uns vor, die Regeln jederzeit zu erweitern oder entfernen." })
+    },
+    "reactionRole_pronoun": {
+        embed: new EmbedBuilder ()
+        .setTitle ( "Wähle hier deine Pronomen aus" )
+        .setColor ( "Blue" ),
+        actionRaw: [
+            new ActionRowBuilder ().addComponents ([
+                new ButtonBuilder ().setCustomId ( "rr-pronouns-he/him" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Primary ),
+                new ButtonBuilder ().setCustomId ( "rr-pronouns-she/her" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Secondary ),
+                new ButtonBuilder ().setCustomId ( "rr-pronouns-they/them" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
+            ])
+        ]
+    },
+    "reactionRole_game": {
+        embed: new EmbedBuilder ()
+        .setTitle ( "Wähle hier deine Game-Rollen aus" )
+        .setColor ( "Blue" ),
+        actionRaw: [
+            new ActionRowBuilder ().addComponents ([
+                new ButtonBuilder ().setCustomId ( "rr-game-lol" ).setLabel ( "LoL" ).setStyle ( ButtonStyle.Primary ),
+                new ButtonBuilder ().setCustomId ( "rr-game-valorant" ).setLabel ( "Valorant" ).setStyle ( ButtonStyle.Secondary ),
+                new ButtonBuilder ().setCustomId ( "rr-game-soccer" ).setLabel ( "Soccer" ).setStyle ( ButtonStyle.Primary )
+            ])
+        ]
+    },
+}
 
 client.login ( process.env.TOKEN )
 
@@ -28,6 +71,41 @@ client.on ( "ready", async ( bot ) => {
     console.log ( "ready" )
     console.log ( bot.user.username )
     //TODO: create Commands
+    
+    await bot.application.fetch ({ force: true })
+    const cmdList = bot.application.commands.cache.map ( cmd => [ cmd.name, cmd.id ])
+    if ( !cmdList.includes ( "suggest" )) {
+        bot.application.commands.create ({
+            name: "suggest",
+            description: "use this command to suggest something",
+            dmPermission: false,
+            options: [
+                {
+                    name: "suggestion",
+                    description: "input here what you want to suggest",
+                    required: true,
+                    type: ApplicationCommandOptionType.String
+                }
+            ]
+        })
+    }
+    if ( !cmdList.includes ( "embed" )) {
+        bot.application.commands.create ({
+            name: "embed",
+            description: "Use this command to send and Embed",
+            defaultMemberPermissions: "Administrator",
+            dmPermission: false,
+            options: [
+                {
+                    name: "embed",
+                    description: "The Embed that should be send",
+                    required: true,
+                    type: ApplicationCommandOptionType.String,
+                    autocomplete: true
+                }
+            ]
+        })
+    }
 })
 
 client.on ( "error", async ( error) => {
@@ -37,6 +115,39 @@ client.on ( "error", async ( error) => {
         if ( err ) throw err
         console.log ( "Error Log created" )
     })
+})
+
+//Autocomplete handling
+client.on ( "interactionCreate", async ( interaction ) => {
+    if ( interaction.isAutocomplete ()) {
+        if ( interaction.commandName === "embed" ) {
+            const current = interaction.options.getFocused ( true )
+            const filtered = Object.keys ( embeds ).filter ( element => {
+                element = element.split ( ' ' )
+                for ( let key in element ) {
+                    if ( typeof element [ key ] === 'function' ) return false
+                    if ( element [ key ].toLowerCase ().startsWith ( current.value.toLowerCase ())) return true
+                }
+            }).slice ( 0, 25 )
+            return interaction.respond ( filtered.map (( element ) => ({ name: element, value: element })))
+        }
+    } else return
+})
+
+//Button Reaction Roles
+client.on ( "interactionCreate" , async ( interaction ) => {
+    if ( interaction.isButton ()) {
+        if ( interaction.customId.startsWith ( "rr-" )) {
+            const split = interaction.customId.split ( "-" )
+            if ( split [ 1 ] === "pronouns" || split [ 1 ] === "game" ) {
+                if ( interaction.member.roles.cache.has ( split [ 2 ])) {
+                    await interaction.member.roles.remove ( split [ 2 ])
+                } else {
+                    await interaction.member.roles.add ( split [ 2 ])
+                }
+            }
+        }
+    }
 })
 
 client.on ( "messageDelete", async ( message ) => {
@@ -395,6 +506,54 @@ client.on ( "voiceStateUpdate", async ( oldState, newState ) => {
     else return
 })
 
-//TODO: reaction Roles
-//TODO: Suggestions
-//TODO: Embed Builder
+//Interaction Commands
+client.on ( "interactionCreate", async ( interaction ) => {
+    if ( interaction.isCommand ()) {
+        switch ( interaction.commandName ) {
+            case "embed":
+                await embedCMD ( interaction )
+                break;
+            case "suggest":
+                await suggestionCMD ( interaction )
+                break;
+        }
+    }
+})
+
+/**
+ * 
+ * @param { CommandInteraction } interaction - The Interaction to reply to
+ */
+async function suggestionCMD ( interaction ) {
+    const suggestionChannel = await interaction.guild.channels.fetch ( "1233489218953674922" )
+    const suggestion = await interaction.options.getString ( "suggestion" )
+    const suggestionEmbed = new EmbedBuilder ()
+    .setTitle ( "a new Suggestion was made" )
+    .setDescription ( `A new Suggestion was made by ${ interaction.member }` )
+    .addFields ([{ name: "Suggestion", value: suggestion, inline: false }])
+    .setColor ( "Random" )
+    const replyEmbed = new EmbedBuilder ()
+    .setDescription ( `The suggestion was posted in ${ suggestionChannel }` )
+    .setColor ( "Random" )
+    const message = await suggestionChannel.send ({ embeds: [ suggestionEmbed ]})
+    await message.react ( "👍" )
+    await message.react ( "👎" )
+    await interaction.reply ({ embeds: [ replyEmbed ]})
+}
+
+/**
+ * 
+ * @param { CommandInteraction } interaction - The Interaction to reply to
+ */
+async function embedCMD ( interaction ) {
+    const option = await interaction.options.getString ( "embed" )
+    const embed = embeds [ option ].embed
+    if ( embed [ option ].actionRaw ) {
+        await interaction.channel.send ({ embeds: [ embed ], components: [ embed [ option ]. actionRaw ]})
+        await interaction.reply ({ content: "embed send", ephemeral: true })
+    }
+    else {
+        await interaction.channel.send ({ embeds: [ embed ]})
+        await interaction.reply ({ content: "embed send", ephemeral: true })
+    }
+}
