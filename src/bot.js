@@ -188,7 +188,7 @@ client.on ( "guildMemberAdd", async ( member ) => {
     const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
     const welcomeEmbed = new EmbedBuilder ()
     .setTitle ( `${ member.guild.name }` )
-    .setDescription ( `Willkommen ${ member }\nVielen Dank, dass du dich für uns entschieden hast` )
+    .setDescription ( `Willkommen ${ member } auf *__Ultimative E-Sports__*\wir freuen uns dass Du Dich für unseren Server entschieden hast und wünschen Dir viel Spaß!` )
     let createdAt = member.user.createdTimestamp ()
     createdAt = Math.floor ( createdAt / 1000 )
     const count = member.guild.members.cache.filter (( member ) => !member.user.bot ).size.toString ()
@@ -207,6 +207,7 @@ client.on ( "guildMemberAdd", async ( member ) => {
 
 client.on ( "guildMemberRemove", async ( member ) => {
     if ( member.user.bot ) return
+    const goodbyeChannel = await member.guild.channels.fetch ( "1232702762563801088" )
     const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
     let createdAt = member.user.createdTimestamp ()
     createdAt = Math.floor ( createdAt / 1000 )
@@ -214,6 +215,9 @@ client.on ( "guildMemberRemove", async ( member ) => {
     joinedAt = Math.floor ( joinedAt / 1000 )
     const count = ( member.guild.members.cache.filter (( member ) => !member.user.bot ).size + 1 ).toString ()
     let countString = count.endsWith ( "1" ) ? `${ count }st` : count.endsWith ( "2" ) ? `${ count }nd` : count.endsWith ( "3" ) ? `${ count }rd` : `${ count }th`
+    const goodByeEmbed = new EmbedBuilder ()
+    .setTitle ( `${ member.guild.name }` )
+    .setDescription ( `Auf wiedersehen ${ member.user.displayName } viel Erfolg auf deinem Weg` )
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Member Left" )
     .setColor ( "Red" )
@@ -223,6 +227,7 @@ client.on ( "guildMemberRemove", async ( member ) => {
         { name: "Account Joined:", value: `The Account joined <:${ joinedAt }:R>`, inline: true },
         { name: "Current Members:", value: `this is the ${ countString } Member`, inline: true }
     ])
+    await goodByeEmbed.send ({ embeds: [ goodByeEmbed ]})
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
