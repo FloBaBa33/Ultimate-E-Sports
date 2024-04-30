@@ -22,7 +22,7 @@ const client = new Client ({
 async function wait ( ms ) { return new Promise ( res => setTimeout ( res, ms )) }
 
 const embeds = [
-    {
+    {//rule embed
         name: "rules_1",
         embed: new EmbedBuilder ()
         .setTitle ( "Die Regeln dieses Servers" )
@@ -39,7 +39,7 @@ const embeds = [
         ])
         .setFooter ({ text: "Den Serverregeln wird automatisch mit dem Beitritt des Servers zugestimmt. Wir behalten uns vor, die Regeln jederzeit zu erweitern oder entfernen." })
     },
-    {
+    {//pronoun reaction role embed
         name: "reactionRole_pronoun",
         embed: new EmbedBuilder ()
         .setTitle ( "Wähle hier deine Pronomen aus" )
@@ -52,7 +52,7 @@ const embeds = [
             ])
         ]
     },
-    {
+    {//game reaction role embed
         name: "reactionRole_game",
         embed: new EmbedBuilder ()
         .setTitle ( "Wähle hier deine Game-Rollen aus" )
@@ -72,7 +72,7 @@ const embeds = [
             ])
         ]
     },
-    {
+    {//pings reaction role embed
         name: "reactionRole_pings",
         embed: new EmbedBuilder ()
         .setTitle ( "Wähle hier deine Ping-Rollen aus" )
@@ -93,7 +93,6 @@ client.login ( process.env.TOKEN )
 client.on ( "ready", async ( bot ) => {
     console.log ( "ready" )
     console.log ( bot.user.username )
-    //TODO: create Commands
     
     await bot.application.fetch ({ force: true })
     const cmdList = bot.application.commands.cache.map ( cmd => [ cmd.name, cmd.id ])
@@ -131,7 +130,7 @@ client.on ( "ready", async ( bot ) => {
     }
 })
 
-client.on ( "error", async ( error) => {
+client.on ( "error", async ( error) => {// error handling größtenteils dafür das falls mal errors aufkommen (zum beispiel durch eine latenz zwischen bot und discord) der Bot nicht abstürzt
     const now = new Date ()
     const fileName = `Error_${ now.getFullYear ()}-${ now.getMonth () + 1 }-${ now.getDate ()}_${ now.getHours ()}-${ now.getMinutes ()}-${ now.getSeconds ()}`
     writeFile ( `errors/${ fileName }`, `Error Name: "${ error.name }"\nError Message: "${ error.message }"`, function ( err ) {
@@ -159,21 +158,26 @@ client.on ( "interactionCreate", async ( interaction ) => {
 
 //Button Reaction Roles
 client.on ( "interactionCreate" , async ( interaction ) => {
-    if ( interaction.isButton ()) {
+    if ( interaction.isButton ()) { // Reaction Role handling (auf button click werden rollen gegeben oder genommen)
         if ( interaction.customId.startsWith ( "rr-" )) {
             const split = interaction.customId.split ( "-" )
-            if ( split [ 1 ] === "pronouns" || split [ 1 ] === "game" ) {
-                if ( interaction.member.roles.cache.has ( split [ 2 ])) {
-                    await interaction.member.roles.remove ( split [ 2 ])
-                } else {
-                    await interaction.member.roles.add ( split [ 2 ])
-                }
+            if ( interaction.member.roles.cache.has ( split [ 2 ])) {
+                await interaction.member.roles.remove ( split [ 2 ])
+                await interaction.reply ({ embeds: [
+                    new EmbedBuilder ().setColor ( "Blue" ).setDescription ( `Du hast dir die Rolle: <@&${ split [ 2 ]}> genommen` )
+                ], ephemeral: true })
+            } else {
+                await interaction.member.roles.add ( split [ 2 ])
+                await interaction.reply ({ embeds: [
+                    new EmbedBuilder ().setColor ( "Blue" ).setDescription ( `Du hast dir die Rolle: <@&${ split [ 2 ]}> gegeben` )
+                ], ephemeral: true })
             }
         }
     }
 })
 
-client.on ( "messageDelete", async ( message ) => {
+//Logging
+client.on ( "messageDelete", async ( message ) => {//beim löschen von einzelnen Nachrichten
     if ( !message.content || message.author.bot ) return
     const logChannel = await message.guild.channels.fetch ( "1232297054999548004" )
     await logChannel.send ({
@@ -187,7 +191,7 @@ client.on ( "messageDelete", async ( message ) => {
     })
 })
 
-client.on ( "messageUpdate", async ( oldMessage, newMessage ) => {
+client.on ( "messageUpdate", async ( oldMessage, newMessage ) => {//beim editieren von Nachrichten
     if ( oldMessage.author.bot ) return
     const logChannel = await oldMessage.guild.channels.fetch ( "1232297054999548004" )
     await logChannel.send ({
@@ -205,7 +209,7 @@ client.on ( "messageUpdate", async ( oldMessage, newMessage ) => {
     })
 })
 
-client.on ( "guildMemberAdd", async ( member ) => {
+client.on ( "guildMemberAdd", async ( member ) => {//wenn ein member dem server beitritt && Wilkommensnachricht kommt hier
     if ( member.user.bot ) return
     const welcomeChannel = await member.guild.channels.fetch ( "1221406495300784178" )
     const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
@@ -228,7 +232,7 @@ client.on ( "guildMemberAdd", async ( member ) => {
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
-client.on ( "guildMemberRemove", async ( member ) => {
+client.on ( "guildMemberRemove", async ( member ) => {//wenn ein member den server verlässt && Abschiedsnachricht
     if ( member.user.bot ) return
     const goodbyeChannel = await member.guild.channels.fetch ( "1232702762563801088" )
     const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
@@ -254,7 +258,7 @@ client.on ( "guildMemberRemove", async ( member ) => {
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
-client.on ( "guildBanAdd", async ( ban ) => {
+client.on ( "guildBanAdd", async ( ban ) => {//wenn jemand gebannt wird
     const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Member Banned" )
@@ -266,47 +270,47 @@ client.on ( "guildBanAdd", async ( ban ) => {
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
-client.on ( "guildMemberUpdate", async ( oldMember, newMember ) => {
+client.on ( "guildMemberUpdate", async ( oldMember, newMember ) => {//wenn ein member sein profil ändert
     const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
     const loggingEmbed = new EmbedBuilder ()
     .setColor ( "Yellow" )
     .setDescription ( `${ oldMember } updated their Profile` )
-    if ( oldMember.user.username !== newMember.user.username ) {
+    if ( oldMember.user.username !== newMember.user.username ) {//username änderung
         loggingEmbed.addFields ([
             { name: "old Username", value: `\`${ oldMember.user.username }\``, inline: true },
             { name: "new Username", value: `\`${ newMember.user.username }\``, inline: true },
             { name: "\u200b", value: "\u200b", inline: true }
         ])
     }
-    if ( oldMember.user.displayName !== newMember.user.displayName ) {
+    if ( oldMember.user.displayName !== newMember.user.displayName ) {//displayname änderung
         loggingEmbed.addFields ([
             { name: "old Displayname", value: `\`${ oldMember.user.displayName }\``, inline: true },
             { name: "new Displayname", value: `\`${ newMember.user.displayName }\``, inline: true },
             { name: "\u200b", value: "\u200b", inline: true }
         ])
     }
-    if ( oldMember.nickname !== newMember.nickname ) {
+    if ( oldMember.nickname !== newMember.nickname ) {//nickname änderung
         loggingEmbed.addFields ([
             { name: "old Nickname", value: `\`${ oldMember.nickname }\``, inline: true },
             { name: "new Nickname", value: `\`${ newMember.nickname }\``, inline: true },
             { name: "\u200b", value: "\u200b", inline: true }
         ])
     }
-    if ( oldMember.user.avatarURL () !== newMember.user.avatarURL () ) {
+    if ( oldMember.user.avatarURL () !== newMember.user.avatarURL () ) {//avatar änderung
         loggingEmbed.addFields ([
             { name: "old Avatar", value: `[click here to view the Avatar](${ oldMember.user.avatarURL () })`, inline: true },
             { name: "new Avatar", value: `[click here to view the Avatar](${ newMember.user.avatarURL () })`, inline: true },
             { name: "\u200b", value: "\u200b", inline: true }
         ])
     }
-    if ( oldMember.user.bannerURL () !== newMember.user.bannerURL () ) {
+    if ( oldMember.user.bannerURL () !== newMember.user.bannerURL () ) {//banner änderung
         loggingEmbed.addFields ([
             { name: "old Banner", value: `[click here to view the Banner](${ oldMember.user.bannerURL () })`, inline: true },
             { name: "new Banner", value: `[click here to view the Banner](${ newMember.user.bannerURL () })`, inline: true },
             { name: "\u200b", value: "\u200b", inline: true }
         ])
     }
-    if ( oldMember.roles !== newMember.roles ) {
+    if ( oldMember.roles !== newMember.roles ) {//rollen änderung
         if ( oldMember.roles.cache.size > newMember.roles.cache.size ) {
             const roleList = []
             oldMember.roles.cache.forEach (( r ) => {
@@ -335,7 +339,7 @@ client.on ( "guildMemberUpdate", async ( oldMember, newMember ) => {
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
-client.on ( "channelCreate", async ( channel ) => {
+client.on ( "channelCreate", async ( channel ) => {//wenn ein channel erstellt wird
     const logChannel = await member.guild.channels.fetch ( "1232776344044179536" )
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Channel Created" )
@@ -366,7 +370,7 @@ client.on ( "channelCreate", async ( channel ) => {
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
-client.on ( "channelDelete", async ( channel ) => {
+client.on ( "channelDelete", async ( channel ) => {//wenn ein channel gelöscht wird
     const logChannel = await member.guild.channels.fetch ( "1232776344044179536" )
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Channel Deleted" )
@@ -375,11 +379,11 @@ client.on ( "channelDelete", async ( channel ) => {
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
-client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {
+client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {//wenn ein channel editiert wird
     const logChannel = await member.guild.channels.fetch ( "1232776344044179536" )
     .setColor ( "Yellow" )
     if ( oldChannel.type === ChannelType.GuildCategory ) {
-        if ( oldChannel.name !== newChannel.name ) {
+        if ( oldChannel.name !== newChannel.name ) {//category wird neu benannt
             loggingEmbed.setTitle ( "This Category was edited" )
             loggingEmbed.addFields ([
                 { name: "old Category Name", value: oldChannel.name, inline: true },
@@ -389,28 +393,28 @@ client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {
     }
     else if ( oldChannel.isTextBased ()) {
         loggingEmbed.setTitle ( "The Channel was edited" )
-        if ( oldChannel.name !== newChannel.name ) {
+        if ( oldChannel.name !== newChannel.name ) {//textchannel bekommt neuen name
             loggingEmbed.addFields ([
                 { name: "Old Name:", value: oldChannel.name, inline: true },
                 { name: "New Name:", value: newChannel.name, inline: true },
                 { name: "\u200b", value: `\u200b`, inline: true },
             ])
         }
-        if ( oldChannel.nsfw !== newChannel.nsfw ) {
+        if ( oldChannel.nsfw !== newChannel.nsfw ) {//textchannel ändert den nsfw status
             loggingEmbed.addFields ([
                 { name: "Was NSFW turned on in this Channel", value: oldChannel.nsfw, inline: true },
                 { name: "Is NSFW now turned on in this Channel", value: newChannel.nsfw, inline: true },
                 { name: "\u200b", value: `\u200b`, inline: true },
             ])
         }
-        if ( oldChannel.parent !== newChannel.parent ) {
+        if ( oldChannel.parent !== newChannel.parent ) {//textchannel wird in eine andere category verschoben
             loggingEmbed.addFields ([
                 { name: "the Old Category", value: oldChannel.parent ? oldChannel.parent : "the Channel was uncategorized", inline: true },
                 { name: "the New Category", value: newChannel.parent ? newChannel.parent : "the Channel now is uncategorized", inline: true },
                 { name: "\u200b", value: `\u200b`, inline: true },
             ])
         }
-        if ( oldChannel.topic !== newChannel.topic ) {
+        if ( oldChannel.topic !== newChannel.topic ) {//textchannel bekommt eine neue beschreibung
             loggingEmbed.addFields ([
                 { name: "The previous Topic", value: oldChannel.topic ? oldChannel.topic : "there was no Topic", inline: true },
                 { name: "The new Topic", value:newChannel.topic ?newChannel.topic : "there now is no Topic", inline: true },
@@ -423,28 +427,28 @@ client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {
     }
     else if ( oldChannel.isVoiceBased ()) {
         loggingEmbed.setTitle ( "The Channel was edited" )
-        if ( oldChannel.name !== newChannel.name ) {
+        if ( oldChannel.name !== newChannel.name ) {//voicechannel bekommt einen neuen namen
             loggingEmbed.addFields ([
                 { name: "The old Name", value: oldChannel.name, inline: true },
                 { name: "The new Name", value: newChannel.name, inline: true },
                 { name: "\u200b", value: `\u200b`, inline: true },
             ])
         }
-        if ( oldChannel.bitrate !== newChannel.bitrate ) {
+        if ( oldChannel.bitrate !== newChannel.bitrate ) {//voicechannel ändert die bitrate
             loggingEmbed.addFields ([
                 { name: "The previous Bitrate", value: oldChannel.bitrate, inline: true },
                 { name: "The new Bitrate", value: newChannel.bitrate, inline: true },
                 { name: "\u200b", value: `\u200b`, inline: true },
             ])
         }
-        if ( oldChannel.parent !== newChannel.parent ) {
+        if ( oldChannel.parent !== newChannel.parent ) {//voicechannel wird in eine andere category verschoben
             loggingEmbed.addFields ([
                 { name: "The previous Category", value: oldChannel.parent ? oldChannel.parent : "the Channel was uncategorized", inline: true },
                 { name: "The new Category", value:newChannel.parent ?newChannel.parent : "the Channel now is uncategorized", inline: true },
                 { name: "\u200b", value: `\u200b`, inline: true },
             ])
         }
-        if ( oldChannel.userLimit !== newChannel.userLimit ) {
+        if ( oldChannel.userLimit !== newChannel.userLimit ) {//voicechannel bekommt ein neues Userlimit
             loggingEmbed.addFields ([
                 { name: "The previous Userlimit", value: oldChannel.userLimit ? oldChannel.userLimit : "the Channel had no Userlimit", inline: true },
                 { name: "The new Userlimit", value: newChannel.userLimit ? newChannel.userLimit : "the Channel now has no Userlimit", inline: true },
@@ -459,40 +463,40 @@ client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
-client.on ( "guildUpdate", async ( oldGuild, newGuild ) => {
+client.on ( "guildUpdate", async ( oldGuild, newGuild ) => {//wenn der server editiert wird
     const logChannel = await member.guild.channels.fetch ( "1232776344044179536" )
     const loggingEmbed = new EmbedBuilder ()
     .setColor ( "Yellow" )
     .setTitle ( "The Server was updated" )
-    if ( oldGuild.name !== newGuild.name ) {
+    if ( oldGuild.name !== newGuild.name ) {//servername ändert sich
         loggingEmbed.addFields ([
             { name: "The previous Name", value: oldGuild.name, inline: true },
             { name: "The new Name", value: newGuild.name, inline: true },
             { name: "\u200b", value: `\u200b`, inline: true },
         ])
     }
-    if ( oldGuild.bannerURL () !== newGuild.bannerURL ()) {
+    if ( oldGuild.bannerURL () !== newGuild.bannerURL ()) {//serverbanner ändert sich
         loggingEmbed.addFields ([
             { name: "The old Banner", value: `[Click here to view the old Banner](${ oldGuild.bannerURL ()})`, inline: true },
             { name: "The new Banner", value: `[Click here to view the new Banner](${ newGuild.bannerURL ()})`, inline: true },
             { name: "\u200b", value: `\u200b`, inline: true },
         ])
     }
-    if ( oldGuild.description !== newGuild.description ) {
+    if ( oldGuild.description !== newGuild.description ) {//serverbeschreibung ändert sich
         loggingEmbed.addFields ([
             { name: "The old Description", value: oldGuild.description ? oldGuild.description : 'There was no Description', inline: true },
             { name: "The new Description", value: newGuild.description ? newGuild.description : 'There now is no Description', inline: true },
             { name: "\u200b", value: `\u200b`, inline: true },
         ])
     }
-    if ( oldGuild.iconURL () !== newGuild.iconURL ()) {
+    if ( oldGuild.iconURL () !== newGuild.iconURL ()) {//servericon ändert sich
         loggingEmbed.addFields ([
             { name: "The old Icon", value: `[Click here to view the old Icon](${ oldGuild.iconURL ()})`, inline: true },
             { name: "The new Icon", value: `[Click here to view the new Icon](${ newGuild.iconURL ()})`, inline: true },
             { name: "\u200b", value: `\u200b`, inline: true },
         ])
     }
-    if ( oldGuild.ownerId !== newGuild.ownerId ) {
+    if ( oldGuild.ownerId !== newGuild.ownerId ) {//serverowner ändert sich
         loggingEmbed.addFields ([
             { name: "The previous Owner", value: `<@${ oldGuild.ownerId }> | ${ oldGuild.ownerId }`, inline: true },
             { name: "The new Owner", value: `<@${ newGuild.ownerId }> | ${ newGuild.ownerId }`, inline: true },
@@ -504,23 +508,23 @@ client.on ( "guildUpdate", async ( oldGuild, newGuild ) => {
     } else return
 })
 
-client.on ( "voiceStateUpdate", async ( oldState, newState ) => {
+client.on ( "voiceStateUpdate", async ( oldState, newState ) => {//wenn Member einem voicechannel joinen oder ihn verlassen
     const logChannel = await member.guild.channels.fetch ( "1233003101007380561" )
-    if ( !oldState.channel ) {
+    if ( !oldState.channel ) {//wenn ein Member einen voicechannel joined
         const loggingEmbed = new EmbedBuilder ()
         .setColor ( "Green" )
         .setTitle ( "Member Joined a Voice Channel" )
         .setDescription ( `${ newState.member } joined the Voice Channel: ${ newState.channel }` )
         await logChannel.send ({ embeds: [ loggingEmbed ]})
     }
-    else if ( !newState.channel ) {
+    else if ( !newState.channel ) {//wenn ein Member einen voicehcannel verlässt
         const loggingEmbed = new EmbedBuilder ()
         .setColor ( "Red" )
         .setTitle ( "Member Left a Voice Channel" )
         .setDescription ( `${ oldState.member } left the Voice Channel: ${ oldState.channel }` )
         await logChannel.send ({ embeds: [ loggingEmbed ]})
     }
-    else if ( oldState.channel !== newState.channel ) {
+    else if ( oldState.channel !== newState.channel ) {//wenn ein Member von einem voicechannel in einen anderen voicechannel wechselt
         const loggingEmbed = new EmbedBuilder ()
         .setColor ( "Yellow" )
         .setTitle ( "Member Moved to a different Voice Channel" )
@@ -549,7 +553,7 @@ client.on ( "interactionCreate", async ( interaction ) => {
 })
 
 /**
- * 
+ * Suggestion Command
  * @param { CommandInteraction } interaction - The Interaction to reply to
  */
 async function suggestionCMD ( interaction ) {
@@ -570,7 +574,7 @@ async function suggestionCMD ( interaction ) {
 }
 
 /**
- * 
+ * Embed Command
  * @param { CommandInteraction } interaction - The Interaction to reply to
  */
 async function embedCMD ( interaction ) {
