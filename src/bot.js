@@ -1,7 +1,6 @@
 require ( "dotenv" ).config ()
 const { Client, IntentsBitField, EmbedBuilder, ChannelType, ApplicationCommandOptionType, CommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require ( "discord.js" )
 const { writeFile } = require ( "fs" )
-const { deserialize } = require("v8")
 
 const client = new Client ({
     intents: [
@@ -22,8 +21,9 @@ const client = new Client ({
  */
 async function wait ( ms ) { return new Promise ( res => setTimeout ( res, ms )) }
 
-const embeds = {
-    "rules_1": {
+const embeds = [
+    {
+        name: "rules_1",
         embed: new EmbedBuilder ()
         .setTitle ( "Die Regeln dieses Servers" )
         .setColor ( "Blue" )
@@ -39,31 +39,54 @@ const embeds = {
         ])
         .setFooter ({ text: "Den Serverregeln wird automatisch mit dem Beitritt des Servers zugestimmt. Wir behalten uns vor, die Regeln jederzeit zu erweitern oder entfernen." })
     },
-    "reactionRole_pronoun": {
+    {
+        name: "reactionRole_pronoun",
         embed: new EmbedBuilder ()
         .setTitle ( "Wähle hier deine Pronomen aus" )
         .setColor ( "Blue" ),
         actionRaw: [
             new ActionRowBuilder ().addComponents ([
-                new ButtonBuilder ().setCustomId ( "rr-pronouns-he/him" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Primary ),
-                new ButtonBuilder ().setCustomId ( "rr-pronouns-she/her" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Secondary ),
-                new ButtonBuilder ().setCustomId ( "rr-pronouns-they/them" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
+                new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349054346760323" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Primary ),
+                new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349143983362080" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Secondary ),
+                new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349180289126410" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
             ])
         ]
     },
-    "reactionRole_game": {
+    {
+        name: "reactionRole_game",
         embed: new EmbedBuilder ()
         .setTitle ( "Wähle hier deine Game-Rollen aus" )
         .setColor ( "Blue" ),
         actionRaw: [
             new ActionRowBuilder ().addComponents ([
-                new ButtonBuilder ().setCustomId ( "rr-game-lol" ).setLabel ( "LoL" ).setStyle ( ButtonStyle.Primary ),
-                new ButtonBuilder ().setCustomId ( "rr-game-valorant" ).setLabel ( "Valorant" ).setStyle ( ButtonStyle.Secondary ),
-                new ButtonBuilder ().setCustomId ( "rr-game-soccer" ).setLabel ( "Soccer" ).setStyle ( ButtonStyle.Primary )
+                new ButtonBuilder ().setCustomId ( "rr-game-1227349233359912970" ).setLabel ( "LoL" ).setStyle ( ButtonStyle.Primary ),
+                new ButtonBuilder ().setCustomId ( "rr-game-1227349262749274193" ).setLabel ( "Valorant" ).setStyle ( ButtonStyle.Secondary ),
+                new ButtonBuilder ().setCustomId ( "rr-game-1227349387559309332" ).setLabel ( "EEA FC" ).setStyle ( ButtonStyle.Primary ),
+                new ButtonBuilder ().setCustomId ( "rr-game-1234587360268652667" ).setLabel ( "Counterstrike" ).setStyle ( ButtonStyle.Secondary ),
+            ]),
+            new ActionRowBuilder ().addComponents ([
+                new ButtonBuilder ().setCustomId ( "rr-game-1234587499528196126" ).setLabel ( "Fortnite" ).setStyle ( ButtonStyle.Secondary ),
+                new ButtonBuilder ().setCustomId ( "rr-game-1234587603521507481" ).setLabel ( "Minecraft" ).setStyle ( ButtonStyle.Primary ),
+                new ButtonBuilder ().setCustomId ( "rr-game-1234587759738359982" ).setLabel ( "Lethal Company" ).setStyle ( ButtonStyle.Secondary ),
+                new ButtonBuilder ().setCustomId ( "rr-game-1234587828525076601" ).setLabel ( "Horror Spiele" ).setStyle ( ButtonStyle.Primary ),
             ])
         ]
     },
-}
+    {
+        name: "reactionRole_pings",
+        embed: new EmbedBuilder ()
+        .setTitle ( "Wähle hier deine Ping-Rollen aus" )
+        .setColor ( "Blue" ),
+        actionRaw: [
+            new ActionRowBuilder ().addComponents ([
+                new ButtonBuilder ().setCustomId ( "rr-ping-1234596961706049596" ).setLabel ( "Spielersuche" ).setStyle ( ButtonStyle.Primary ),
+                new ButtonBuilder ().setCustomId ( "rr-ping-1234597721948684379" ).setLabel ( "Bumps" ).setStyle ( ButtonStyle.Secondary ),
+                new ButtonBuilder ().setCustomId ( "rr-ping-1234597789057552445" ).setLabel ( "Streams" ).setStyle ( ButtonStyle.Primary ),
+                new ButtonBuilder ().setCustomId ( "rr-ping-1234597852861300757" ).setLabel ( "Ankündigungen" ).setStyle ( ButtonStyle.Secondary ),
+            ])
+        ]
+    },
+]
 
 client.login ( process.env.TOKEN )
 
@@ -122,7 +145,7 @@ client.on ( "interactionCreate", async ( interaction ) => {
     if ( interaction.isAutocomplete ()) {
         if ( interaction.commandName === "embed" ) {
             const current = interaction.options.getFocused ( true )
-            const filtered = Object.keys ( embeds ).filter ( element => {
+            const filtered = embeds.map ( embed => embed.name ).filter ( element => {
                 element = element.split ( ' ' )
                 for ( let key in element ) {
                     if ( typeof element [ key ] === 'function' ) return false
@@ -552,9 +575,13 @@ async function suggestionCMD ( interaction ) {
  */
 async function embedCMD ( interaction ) {
     const option = await interaction.options.getString ( "embed" )
-    const embed = embeds [ option ].embed
-    if ( embed [ option ].actionRaw ) {
-        await interaction.channel.send ({ embeds: [ embed ], components: [ embed [ option ]. actionRaw ]})
+    const selection = embeds.filter ( element => {
+        if ( element.name === option ) return true
+        else return false
+    })[ 0 ]
+    const embed = selection.embed
+    if ( selection.actionRaw ) {
+        await interaction.channel.send ({ embeds: [ embed ], components: [ selection.actionRaw ]})
         await interaction.reply ({ content: "embed send", ephemeral: true })
     }
     else {
