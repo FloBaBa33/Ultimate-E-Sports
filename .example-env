@@ -1,1 +1,5 @@
-TOKEN = ""
+/**
+ * Um den Bot starten zu können nenne diese Datei in ".env" um und kopiere den Bot Token hier rein
+ * Wichtig der Bot braucht alle drei Privileged Gateway Intents
+ */
+TOKEN = "Insert Token Here"

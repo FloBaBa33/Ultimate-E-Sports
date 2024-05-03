@@ -8,7 +8,8 @@ const client = new Client ({
         IntentsBitField.Flags.Guilds,
         IntentsBitField.Flags.GuildPresences,
         IntentsBitField.Flags.MessageContent,
-        IntentsBitField.Flags.GuildVoiceStates
+        IntentsBitField.Flags.GuildVoiceStates,
+        IntentsBitField.Flags.GuildMessages
     ]
 })
 
@@ -45,12 +46,11 @@ const embeds = [
         .setTitle ( "Wähle hier deine Pronomen aus" )
         .setColor ( "Blue" ),
         actionRaw: [
-            new ActionRowBuilder ().addComponents ([
-                new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349054346760323" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Primary ),
-                new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349143983362080" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Secondary ),
-                new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349180289126410" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
-            ])
-        ]
+            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349054346760323" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349143983362080" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Secondary ),
+            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349180289126410" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
+        ],
+        raw: 1
     },
     {//game reaction role embed
         name: "reactionRole_game",
@@ -58,19 +58,17 @@ const embeds = [
         .setTitle ( "Wähle hier deine Game-Rollen aus" )
         .setColor ( "Blue" ),
         actionRaw: [
-            new ActionRowBuilder ().addComponents ([
-                new ButtonBuilder ().setCustomId ( "rr-game-1227349233359912970" ).setLabel ( "LoL" ).setStyle ( ButtonStyle.Primary ),
-                new ButtonBuilder ().setCustomId ( "rr-game-1227349262749274193" ).setLabel ( "Valorant" ).setStyle ( ButtonStyle.Secondary ),
-                new ButtonBuilder ().setCustomId ( "rr-game-1227349387559309332" ).setLabel ( "EEA FC" ).setStyle ( ButtonStyle.Primary ),
-                new ButtonBuilder ().setCustomId ( "rr-game-1234587360268652667" ).setLabel ( "Counterstrike" ).setStyle ( ButtonStyle.Secondary ),
-            ]),
-            new ActionRowBuilder ().addComponents ([
-                new ButtonBuilder ().setCustomId ( "rr-game-1234587499528196126" ).setLabel ( "Fortnite" ).setStyle ( ButtonStyle.Secondary ),
-                new ButtonBuilder ().setCustomId ( "rr-game-1234587603521507481" ).setLabel ( "Minecraft" ).setStyle ( ButtonStyle.Primary ),
-                new ButtonBuilder ().setCustomId ( "rr-game-1234587759738359982" ).setLabel ( "Lethal Company" ).setStyle ( ButtonStyle.Secondary ),
-                new ButtonBuilder ().setCustomId ( "rr-game-1234587828525076601" ).setLabel ( "Horror Spiele" ).setStyle ( ButtonStyle.Primary ),
-            ])
-        ]
+            new ButtonBuilder ().setCustomId ( "rr-game-1227349233359912970" ).setLabel ( "LoL" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-game-1227349262749274193" ).setLabel ( "Valorant" ).setStyle ( ButtonStyle.Secondary ),
+            new ButtonBuilder ().setCustomId ( "rr-game-1227349387559309332" ).setLabel ( "EA FC" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-game-1234587360268652667" ).setLabel ( "Counterstrike" ).setStyle ( ButtonStyle.Secondary ),
+            new ButtonBuilder ().setCustomId ( "rr-game-1234587499528196126" ).setLabel ( "Fortnite" ).setStyle ( ButtonStyle.Secondary ),
+            new ButtonBuilder ().setCustomId ( "rr-game-1234587603521507481" ).setLabel ( "Minecraft" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-game-1234587759738359982" ).setLabel ( "Lethal Company" ).setStyle ( ButtonStyle.Secondary ),
+            new ButtonBuilder ().setCustomId ( "rr-game-1234587828525076601" ).setLabel ( "Horror Spiele" ).setStyle ( ButtonStyle.Primary ),
+        ],
+        raw: 2,
+        size: { 1: 4, 2: 4 }
     },
     {//pings reaction role embed
         name: "reactionRole_pings",
@@ -78,39 +76,34 @@ const embeds = [
         .setTitle ( "Wähle hier deine Ping-Rollen aus" )
         .setColor ( "Blue" ),
         actionRaw: [
-            new ActionRowBuilder ().addComponents ([
-                new ButtonBuilder ().setCustomId ( "rr-ping-1234596961706049596" ).setLabel ( "Spielersuche" ).setStyle ( ButtonStyle.Primary ),
-                new ButtonBuilder ().setCustomId ( "rr-ping-1234597721948684379" ).setLabel ( "Bumps" ).setStyle ( ButtonStyle.Secondary ),
-                new ButtonBuilder ().setCustomId ( "rr-ping-1234597789057552445" ).setLabel ( "Streams" ).setStyle ( ButtonStyle.Primary ),
-                new ButtonBuilder ().setCustomId ( "rr-ping-1234597852861300757" ).setLabel ( "Ankündigungen" ).setStyle ( ButtonStyle.Secondary ),
-            ])
-        ]
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234596961706049596" ).setLabel ( "Spielersuche" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234597721948684379" ).setLabel ( "Bumps" ).setStyle ( ButtonStyle.Secondary ),
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234597789057552445" ).setLabel ( "Streams" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234597852861300757" ).setLabel ( "Ankündigungen" ).setStyle ( ButtonStyle.Secondary ),
+        ],
+        raw: 1
     },
 ]
 
 client.login ( process.env.TOKEN )
 
+client.on ( "messageCreate", async ( message ) => {
+    if ( message.author.id !== "607910928897540105" ) return
+    if ( message.content.startsWith ( "simjoin" )) {
+        client.emit ( "guildMemberAdd", message.member )
+    }
+    if ( message.content.startsWith ( "simleave" )) {
+        client.emit ( "guildMemberRemove", message.member )
+    }
+})
+
 client.on ( "ready", async ( bot ) => {
     console.log ( "ready" )
     console.log ( bot.user.username )
+    console.log ( bot.guilds.cache.map ( g => g.name ))
     
-    await bot.application.fetch ({ force: true })
+    await bot.application.commands.fetch ({ force: true })
     const cmdList = bot.application.commands.cache.map ( cmd => [ cmd.name, cmd.id ])
-    if ( !cmdList.includes ( "suggest" )) {
-        bot.application.commands.create ({
-            name: "suggest",
-            description: "use this command to suggest something",
-            dmPermission: false,
-            options: [
-                {
-                    name: "suggestion",
-                    description: "input here what you want to suggest",
-                    required: true,
-                    type: ApplicationCommandOptionType.String
-                }
-            ]
-        })
-    }
     if ( !cmdList.includes ( "embed" )) {
         bot.application.commands.create ({
             name: "embed",
@@ -215,17 +208,17 @@ client.on ( "guildMemberAdd", async ( member ) => {//wenn ein member dem server 
     const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
     const welcomeEmbed = new EmbedBuilder ()
     .setTitle ( `${ member.guild.name }` )
-    .setDescription ( `Willkommen ${ member } auf *__Ultimative E-Sports__*\wir freuen uns dass Du Dich für unseren Server entschieden hast und wünschen Dir viel Spaß!` )
-    let createdAt = member.user.createdTimestamp ()
+    .setDescription ( `Willkommen ${ member } auf *__Ultimative E-Sports__*\nwir freuen uns dass Du Dich für unseren Server entschieden hast und wünschen Dir viel Spaß!` )
+    let createdAt = member.user.createdTimestamp
     createdAt = Math.floor ( createdAt / 1000 )
-    const count = member.guild.members.cache.filter (( member ) => !member.user.bot ).size.toString ()
+    const count = member.guild.members.cache.filter (( m ) => !m.user.bot ).size.toString ()
     let countString = count.endsWith ( "1" ) ? `${ count }st` : count.endsWith ( "2" ) ? `${ count }nd` : count.endsWith ( "3" ) ? `${ count }rd` : `${ count }th`
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Member Join" )
     .setColor ( "DarkGreen" )
     .setDescription ( `${ member } joined the Server ${ member.guild.name }` )
     .addFields ([
-        { name: "Account Age:", value: `The Account was created <:${ createdAt }:R>`, inline: true },
+        { name: "Account Age:", value: `The Account was created <t:${ createdAt }:R>`, inline: true },
         { name: "Current Members:", value: `this is the ${ countString } Member`, inline: true }
     ])
     await welcomeChannel.send ({ embeds: [ welcomeEmbed ]})
@@ -236,9 +229,9 @@ client.on ( "guildMemberRemove", async ( member ) => {//wenn ein member den serv
     if ( member.user.bot ) return
     const goodbyeChannel = await member.guild.channels.fetch ( "1232702762563801088" )
     const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
-    let createdAt = member.user.createdTimestamp ()
+    let createdAt = member.user.createdTimestamp
     createdAt = Math.floor ( createdAt / 1000 )
-    let joinedAt = member.joinedTimestamp ()
+    let joinedAt = member.joinedTimestamp
     joinedAt = Math.floor ( joinedAt / 1000 )
     const count = ( member.guild.members.cache.filter (( member ) => !member.user.bot ).size + 1 ).toString ()
     let countString = count.endsWith ( "1" ) ? `${ count }st` : count.endsWith ( "2" ) ? `${ count }nd` : count.endsWith ( "3" ) ? `${ count }rd` : `${ count }th`
@@ -250,11 +243,11 @@ client.on ( "guildMemberRemove", async ( member ) => {//wenn ein member den serv
     .setColor ( "Red" )
     .setDescription ( `${ member } left the Server ${ member.guild.name }` )
     .addFields ([
-        { name: "Account Age:", value: `The Account was created <:${ createdAt }:R>`, inline: true },
-        { name: "Account Joined:", value: `The Account joined <:${ joinedAt }:R>`, inline: true },
+        { name: "Account Age:", value: `The Account was created <t:${ createdAt }:R>`, inline: true },
+        { name: "Account Joined:", value: `The Account joined <t:${ joinedAt }:R>`, inline: true },
         { name: "Current Members:", value: `this is the ${ countString } Member`, inline: true }
     ])
-    await goodByeEmbed.send ({ embeds: [ goodByeEmbed ]})
+    await goodbyeChannel.send ({ embeds: [ goodByeEmbed ]})
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
@@ -271,7 +264,7 @@ client.on ( "guildBanAdd", async ( ban ) => {//wenn jemand gebannt wird
 })
 
 client.on ( "guildMemberUpdate", async ( oldMember, newMember ) => {//wenn ein member sein profil ändert
-    const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
+    const logChannel = await oldMember.guild.channels.fetch ( "1232382456171200562" )
     const loggingEmbed = new EmbedBuilder ()
     .setColor ( "Yellow" )
     .setDescription ( `${ oldMember } updated their Profile` )
@@ -545,33 +538,9 @@ client.on ( "interactionCreate", async ( interaction ) => {
             case "embed":
                 await embedCMD ( interaction )
                 break;
-            case "suggest":
-                await suggestionCMD ( interaction )
-                break;
         }
     }
 })
-
-/**
- * Suggestion Command
- * @param { CommandInteraction } interaction - The Interaction to reply to
- */
-async function suggestionCMD ( interaction ) {
-    const suggestionChannel = await interaction.guild.channels.fetch ( "1233489218953674922" )
-    const suggestion = await interaction.options.getString ( "suggestion" )
-    const suggestionEmbed = new EmbedBuilder ()
-    .setTitle ( "a new Suggestion was made" )
-    .setDescription ( `A new Suggestion was made by ${ interaction.member }` )
-    .addFields ([{ name: "Suggestion", value: suggestion, inline: false }])
-    .setColor ( "Random" )
-    const replyEmbed = new EmbedBuilder ()
-    .setDescription ( `The suggestion was posted in ${ suggestionChannel }` )
-    .setColor ( "Random" )
-    const message = await suggestionChannel.send ({ embeds: [ suggestionEmbed ]})
-    await message.react ( "👍" )
-    await message.react ( "👎" )
-    await interaction.reply ({ embeds: [ replyEmbed ]})
-}
 
 /**
  * Embed Command
@@ -584,8 +553,58 @@ async function embedCMD ( interaction ) {
         else return false
     })[ 0 ]
     const embed = selection.embed
-    if ( selection.actionRaw ) {
-        await interaction.channel.send ({ embeds: [ embed ], components: [ selection.actionRaw ]})
+    const components = selection.actionRaw || []
+    if ( selection.raw === 1 ) {
+        const actionRaw = new ActionRowBuilder ().addComponents ( components )
+        await interaction.channel.send ({ embeds: [ embed ], components: [ actionRaw ]})
+        await interaction.reply ({ content: "embed send", ephemeral: true })
+    } else if ( selection.raw === 2 ) {
+        const comp_1 = components.splice ( 0, selection.size [ 1 ])
+        const comp_2 = components
+        const actionRaw = [
+            new ActionRowBuilder ().addComponents ( comp_1 ),
+            new ActionRowBuilder ().addComponents ( comp_2 ),
+        ]
+        await interaction.channel.send ({ embeds: [ embed ], components: actionRaw })
+        await interaction.reply ({ content: "embed send", ephemeral: true })
+    } else if ( selection.raw === 3 ) {
+        const comp_1 = components.splice ( 0, selection.size [ 1 ])
+        const comp_2 = components.splice ( 0, selection.size [ 2 ])
+        const comp_3 = components
+        const actionRaw = [
+            new ActionRowBuilder ().addComponents ( comp_1 ),
+            new ActionRowBuilder ().addComponents ( comp_2 ),
+            new ActionRowBuilder ().addComponents ( comp_3 ),
+        ]
+        await interaction.channel.send ({ embeds: [ embed ], components: actionRaw })
+        await interaction.reply ({ content: "embed send", ephemeral: true })
+    } else if ( selection.raw === 4 ) {
+        const comp_1 = components.splice ( 0, selection.size [ 1 ])
+        const comp_2 = components.splice ( 0, selection.size [ 2 ])
+        const comp_3 = components.splice ( 0, selection.size [ 3 ])
+        const comp_4 = components
+        const actionRaw = [
+            new ActionRowBuilder ().addComponents ( comp_1 ),
+            new ActionRowBuilder ().addComponents ( comp_2 ),
+            new ActionRowBuilder ().addComponents ( comp_3 ),
+            new ActionRowBuilder ().addComponents ( comp_4 ),
+        ]
+        await interaction.channel.send ({ embeds: [ embed ], components: actionRaw })
+        await interaction.reply ({ content: "embed send", ephemeral: true })
+    } else if ( selection.raw === 5 ) {
+        const comp_1 = components.splice ( 0, selection.size [ 1 ])
+        const comp_2 = components.splice ( 0, selection.size [ 2 ])
+        const comp_3 = components.splice ( 0, selection.size [ 3 ])
+        const comp_4 = components.splice ( 0, selection.size [ 4 ])
+        const comp_5 = components
+        const actionRaw = [
+            new ActionRowBuilder ().addComponents ( comp_1 ),
+            new ActionRowBuilder ().addComponents ( comp_2 ),
+            new ActionRowBuilder ().addComponents ( comp_3 ),
+            new ActionRowBuilder ().addComponents ( comp_4 ),
+            new ActionRowBuilder ().addComponents ( comp_5 ),
+        ]
+        await interaction.channel.send ({ embeds: [ embed ], components: actionRaw })
         await interaction.reply ({ content: "embed send", ephemeral: true })
     }
     else {
