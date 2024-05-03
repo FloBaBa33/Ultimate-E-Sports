@@ -333,7 +333,7 @@ client.on ( "guildMemberUpdate", async ( oldMember, newMember ) => {//wenn ein m
 })
 
 client.on ( "channelCreate", async ( channel ) => {//wenn ein channel erstellt wird
-    const logChannel = await member.guild.channels.fetch ( "1232776344044179536" )
+    const logChannel = await channel.guild.channels.fetch ( "1232776344044179536" )
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Channel Created" )
     .setColor ( "Green" )
@@ -364,7 +364,7 @@ client.on ( "channelCreate", async ( channel ) => {//wenn ein channel erstellt w
 })
 
 client.on ( "channelDelete", async ( channel ) => {//wenn ein channel gelöscht wird
-    const logChannel = await member.guild.channels.fetch ( "1232776344044179536" )
+    const logChannel = await channel.guild.channels.fetch ( "1232776344044179536" )
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Channel Deleted" )
     .setColor ( "Red" )
@@ -373,7 +373,7 @@ client.on ( "channelDelete", async ( channel ) => {//wenn ein channel gelöscht 
 })
 
 client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {//wenn ein channel editiert wird
-    const logChannel = await member.guild.channels.fetch ( "1232776344044179536" )
+    const logChannel = await oldChannel.guild.channels.fetch ( "1232776344044179536" )
     .setColor ( "Yellow" )
     if ( oldChannel.type === ChannelType.GuildCategory ) {
         if ( oldChannel.name !== newChannel.name ) {//category wird neu benannt
@@ -457,7 +457,7 @@ client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {//wenn ein cha
 })
 
 client.on ( "guildUpdate", async ( oldGuild, newGuild ) => {//wenn der server editiert wird
-    const logChannel = await member.guild.channels.fetch ( "1232776344044179536" )
+    const logChannel = await oldGuild.channels.fetch ( "1232776344044179536" )
     const loggingEmbed = new EmbedBuilder ()
     .setColor ( "Yellow" )
     .setTitle ( "The Server was updated" )
@@ -502,7 +502,7 @@ client.on ( "guildUpdate", async ( oldGuild, newGuild ) => {//wenn der server ed
 })
 
 client.on ( "voiceStateUpdate", async ( oldState, newState ) => {//wenn Member einem voicechannel joinen oder ihn verlassen
-    const logChannel = await member.guild.channels.fetch ( "1233003101007380561" )
+    const logChannel = await oldState.guild.channels.fetch ( "1233003101007380561" )
     if ( !oldState.channel ) {//wenn ein Member einen voicechannel joined
         const loggingEmbed = new EmbedBuilder ()
         .setColor ( "Green" )
