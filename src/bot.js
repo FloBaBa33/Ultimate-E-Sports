@@ -101,6 +101,22 @@ client.on ( "messageCreate", async ( message ) => {
     if ( message.content.startsWith ( "simleave" )) {
         client.emit ( "guildMemberRemove", message.member )
     }
+    if ( message.content.startsWith ( "embed" )) {
+        const embed = new EmbedBuilder ().addFields ([
+            { name: "1", value: "1", inline: false },
+            { name: "2", value: "2", inline: false },
+            { name: "3", value: "3", inline: false },
+            { name: "4", value: "4", inline: false },
+            { name: "5", value: "5", inline: false },
+            { name: "6", value: "6", inline: false },
+            { name: "7", value: "7", inline: false },
+            { name: "8", value: "8", inline: false },
+            { name: "9", value: "9", inline: false },
+            { name: "10", value: "10", inline: false },
+        ])
+        await message.reply ({ embeds: [ embed ]})
+        console.log ( embed.data )
+    }
 })
 
 client.on ( "ready", async ( bot ) => {
@@ -434,7 +450,7 @@ client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {//wenn ein cha
                 { name: "\u200b", value: `\u200b`, inline: true },
             ])
         }
-        if ( loggingEmbed.data.fields.length !== 0 ) {
+        if ( loggingEmbed.data.fields && loggingEmbed.data.fields.length !== 0 ) {
             await logChannel.send ({ embeds: [ loggingEmbed ]})
         } else return
     }
@@ -468,7 +484,7 @@ client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {//wenn ein cha
                 { name: "\u200b", value: `\u200b`, inline: true },
             ])
         }
-        if ( loggingEmbed.data.fields.length !== 0 ) {
+        if ( loggingEmbed.data.fields && loggingEmbed.data.fields.length !== 0 ) {
             await logChannel.send ({ embeds: [ loggingEmbed ]})
         } else return
     }
@@ -516,7 +532,7 @@ client.on ( "guildUpdate", async ( oldGuild, newGuild ) => {//wenn der server ed
             { name: "\u200b", value: `\u200b`, inline: true },
         ])
     }
-    if ( loggingEmbed.data.fields.length !== 0 ) {
+    if ( loggingEmbed.data.fields && loggingEmbed.data.fields.length !== 0 ) {
         await logChannel.send ({ embeds: [ loggingEmbed ]})
     } else return
 })
