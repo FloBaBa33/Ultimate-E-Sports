@@ -393,6 +393,7 @@ client.on ( "channelDelete", async ( channel ) => {//wenn ein channel gelöscht 
 
 client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {//wenn ein channel editiert wird
     const logChannel = await oldChannel.guild.channels.fetch ( "1232776344044179536" )
+    const loggingEmbed = new EmbedBuilder ()
     .setColor ( "Yellow" )
     if ( oldChannel.type === ChannelType.GuildCategory ) {
         if ( oldChannel.name !== newChannel.name ) {//category wird neu benannt
