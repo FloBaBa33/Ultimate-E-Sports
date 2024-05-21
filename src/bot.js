@@ -38,7 +38,13 @@ const embeds = [
             { name: "__$7__", value: "Wenn du etwas siehst, das gegen die Regeln verstößt, oder wodurch du dich nicht sicher fühlst, dann benachrichtige die Mitarbeiter! Wir möchten, dass dieser Server ein Ort ist, an dem sich jeder Willkommen & Sicher fühlen soll.", inline: false },
             { name: "__$8__", value: "Zusätzlich zu den oben genannten Regeln gelten natürlich auch die [allgemainen Discord-Regeln](https://discord.com/guidelines).", inline: false },
         ])
-        .setFooter ({ text: "Den Serverregeln wird automatisch mit dem Beitritt des Servers zugestimmt. Wir behalten uns vor, die Regeln jederzeit zu erweitern oder entfernen." })
+        .setFooter ({ text: "Den Serverregeln wird automatisch mit dem Beitritt des Servers zugestimmt. Wir behalten uns vor, die Regeln jederzeit zu erweitern oder entfernen." }),
+        actionRaw: [
+            new ActionRowBuilder ().addComponents ([
+                new ButtonBuilder ().setCustomId ( "rules-1225515002027315250" ).setLabel ( "Accept" ).setStyle ( ButtonStyle.Success ),
+            ])
+        ],
+        raw: 1,
     },
     {//pronoun reaction role embed
         name: "reactionRole_pronoun",
@@ -50,7 +56,7 @@ const embeds = [
             new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349143983362080" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Secondary ),
             new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349180289126410" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
         ],
-        raw: 1
+        raw: 1,
     },
     {//game reaction role embed
         name: "reactionRole_game",
@@ -68,7 +74,7 @@ const embeds = [
             new ButtonBuilder ().setCustomId ( "rr-game-1234587828525076601" ).setLabel ( "Horror Spiele" ).setStyle ( ButtonStyle.Primary ),
         ],
         raw: 2,
-        size: { 1: 4, 2: 4 }
+        size: { 1: 4, 2: 4 },
     },
     {//pings reaction role embed
         name: "reactionRole_pings",
@@ -163,6 +169,19 @@ client.on ( "interactionCreate" , async ( interaction ) => {
                 await interaction.member.roles.add ( split [ 2 ])
                 await interaction.reply ({ embeds: [
                     new EmbedBuilder ().setColor ( "Blue" ).setDescription ( `Du hast dir die Rolle: <@&${ split [ 2 ]}> gegeben` )
+                ], ephemeral: true })
+            }
+        }
+        else if ( interaction.customId.startsWith ( "rules-" )) {
+            const split = interaction.customId.split ( "-" )
+            if ( interaction.member.roles.cache.has ( split [ 1 ])) {
+                await interaction.reply ({ embeds: [
+                    new EmbedBuilder ().setColor ( "Blue" ).setDescription ( `Du hast die Regeln bereits akzeptiert` )
+                ], ephemeral: true })
+            } else {
+                await interaction.member.roles.add ( split [ 1 ])
+                await interaction.reply ({ embeds: [
+                    new EmbedBuilder ().setColor ( "Blue" ).setDescription ( `Du hast die Regeln akzeptiert` )
                 ], ephemeral: true })
             }
         }
