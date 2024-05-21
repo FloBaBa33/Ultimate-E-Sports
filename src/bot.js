@@ -40,9 +40,7 @@ const embeds = [
         ])
         .setFooter ({ text: "Den Serverregeln wird automatisch mit dem Beitritt des Servers zugestimmt. Wir behalten uns vor, die Regeln jederzeit zu erweitern oder entfernen." }),
         actionRaw: [
-            new ActionRowBuilder ().addComponents ([
-                new ButtonBuilder ().setCustomId ( "rules-1225515002027315250" ).setLabel ( "Accept" ).setStyle ( ButtonStyle.Success ),
-            ])
+            new ButtonBuilder ().setCustomId ( "rules-1225515002027315250" ).setLabel ( "Accept" ).setStyle ( ButtonStyle.Success ).setEmoji ( '✔️' )
         ],
         raw: 1,
     },
