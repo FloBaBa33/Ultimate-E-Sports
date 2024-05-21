@@ -211,7 +211,7 @@ client.on ( "messageDelete", async ( message ) => {//beim löschen von einzelnen
             new EmbedBuilder ()
             .setTitle ( "Message deleted" )
             .setColor ( "DarkRed" )
-            .setDescription ( `Message by ${ message.author }|${ message.author.username }\n${ message.content }`)
+            .setDescription ( `Message by ${ message.author }|${ message.author.username } in the channel: ${ message.channel }\n${ message.content }` )
             .setFooter ({ text: `ID: ${ message.author.id }` })
         ]
     })
@@ -225,7 +225,7 @@ client.on ( "messageUpdate", async ( oldMessage, newMessage ) => {//beim editier
             new EmbedBuilder ()
             .setTitle ( "Message edited" )
             .setColor ( "Yellow" )
-            .setDescription ( `Message by ${ oldMessage.author }|${ oldMessage.author.username }`)
+            .setDescription ( `Message by ${ oldMessage.author }|${ oldMessage.author.username } in the channel: ${ oldMessage.channel }` )
             .addFields ([
                 { name: `Old Message`, value: `-> ${ oldMessage.content }`, inline: false },
                 { name: `New Message`, value: `-> ${ newMessage.content }`, inline: false },
