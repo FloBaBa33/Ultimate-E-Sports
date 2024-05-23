@@ -88,6 +88,50 @@ const embeds = [
         ],
         raw: 1
     },
+    {//pronoun reaction role embed
+        name: "reactionRole_pronoun_blau",
+        embed: new EmbedBuilder ()
+        .setTitle ( "Wähle hier deine Pronomen aus" )
+        .setColor ( "Blue" ),
+        actionRaw: [
+            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349054346760323" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349143983362080" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349180289126410" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
+        ],
+        raw: 1,
+    },
+    {//interessen reaction role embed
+        name: "reactionRole_interesse_blau",
+        embed: new EmbedBuilder ()
+        .setTitle ( "Wähle hier deine Interessens-Rollen aus" )
+        .setColor ( "Blue" ),
+        actionRaw: [
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1227349233359912970" ).setLabel ( "LoL" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1227349262749274193" ).setLabel ( "Valorant" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1227349387559309332" ).setLabel ( "EA FC" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587360268652667" ).setLabel ( "Counterstrike" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587499528196126" ).setLabel ( "Fortnite" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587603521507481" ).setLabel ( "Minecraft" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587759738359982" ).setLabel ( "Lethal Company" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587828525076601" ).setLabel ( "Horror Spiele" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1236036090452775023" ).setLabel ( "Agility" ).setStyle ( ButtonStyle.Primary ),
+        ],
+        raw: 2,
+        size: { 1: 5, 2: 4 },
+    },
+    {//pings reaction role embed
+        name: "reactionRole_pings",
+        embed: new EmbedBuilder ()
+        .setTitle ( "Wähle hier deine Ping-Rollen aus_blau" )
+        .setColor ( "Blue" ),
+        actionRaw: [
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234596961706049596" ).setLabel ( "Spielersuche" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234597721948684379" ).setLabel ( "Bumps" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234597789057552445" ).setLabel ( "Streams" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234597852861300757" ).setLabel ( "Ankündigungen" ).setStyle ( ButtonStyle.Primary ),
+        ],
+        raw: 1
+    },
 ]
 
 client.login ( process.env.TOKEN )
@@ -278,7 +322,7 @@ client.on ( "guildMemberRemove", async ( member ) => {//wenn ein member den serv
     let countString = count.endsWith ( "1" ) ? `${ count }st` : count.endsWith ( "2" ) ? `${ count }nd` : count.endsWith ( "3" ) ? `${ count }rd` : `${ count }th`
     const goodByeEmbed = new EmbedBuilder ()
     .setTitle ( `${ member.guild.name }` )
-    .setDescription ( `Auf wiedersehen ${ member.user.displayName } viel Erfolg auf deinem Weg` )
+    .setDescription ( `Auf wiedersehen ${ member.user.displayName }, viel Erfolg auf deinem Weg` )
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Member Left" )
     .setColor ( "Red" )
@@ -413,90 +457,96 @@ client.on ( "channelDelete", async ( channel ) => {//wenn ein channel gelöscht 
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
-client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {//wenn ein channel editiert wird
-    const logChannel = await oldChannel.guild.channels.fetch ( "1232776344044179536" )
-    const loggingEmbed = new EmbedBuilder ()
-    .setColor ( "Yellow" )
-    if ( oldChannel.type === ChannelType.GuildCategory ) {
-        if ( oldChannel.name !== newChannel.name ) {//category wird neu benannt
-            loggingEmbed.setTitle ( "This Category was edited" )
-            loggingEmbed.addFields ([
-                { name: "old Category Name", value: oldChannel.name, inline: true },
-                { name: "new Category Name", value: newChannel.name, inline: true },
-            ])
-        }
-    }
-    else if ( oldChannel.isTextBased ()) {
-        loggingEmbed.setTitle ( "The Channel was edited" )
-        if ( oldChannel.name !== newChannel.name ) {//textchannel bekommt neuen name
-            loggingEmbed.addFields ([
-                { name: "Old Name:", value: oldChannel.name, inline: true },
-                { name: "New Name:", value: newChannel.name, inline: true },
-                { name: "\u200b", value: `\u200b`, inline: true },
-            ])
-        }
-        if ( oldChannel.nsfw !== newChannel.nsfw ) {//textchannel ändert den nsfw status
-            loggingEmbed.addFields ([
-                { name: "Was NSFW turned on in this Channel", value: oldChannel.nsfw, inline: true },
-                { name: "Is NSFW now turned on in this Channel", value: newChannel.nsfw, inline: true },
-                { name: "\u200b", value: `\u200b`, inline: true },
-            ])
-        }
-        if ( oldChannel.parent !== newChannel.parent ) {//textchannel wird in eine andere category verschoben
-            loggingEmbed.addFields ([
-                { name: "the Old Category", value: oldChannel.parent ? oldChannel.parent : "the Channel was uncategorized", inline: true },
-                { name: "the New Category", value: newChannel.parent ? newChannel.parent : "the Channel now is uncategorized", inline: true },
-                { name: "\u200b", value: `\u200b`, inline: true },
-            ])
-        }
-        if ( oldChannel.topic !== newChannel.topic ) {//textchannel bekommt eine neue beschreibung
-            loggingEmbed.addFields ([
-                { name: "The previous Topic", value: oldChannel.topic ? oldChannel.topic : "there was no Topic", inline: true },
-                { name: "The new Topic", value:newChannel.topic ?newChannel.topic : "there now is no Topic", inline: true },
-                { name: "\u200b", value: `\u200b`, inline: true },
-            ])
-        }
-        if ( loggingEmbed.data.fields && loggingEmbed.data.fields.length !== 0 ) {
-            await logChannel.send ({ embeds: [ loggingEmbed ]})
-        } else return
-    }
-    else if ( oldChannel.isVoiceBased ()) {
-        loggingEmbed.setTitle ( "The Channel was edited" )
-        if ( oldChannel.name !== newChannel.name ) {//voicechannel bekommt einen neuen namen
-            loggingEmbed.addFields ([
-                { name: "The old Name", value: oldChannel.name, inline: true },
-                { name: "The new Name", value: newChannel.name, inline: true },
-                { name: "\u200b", value: `\u200b`, inline: true },
-            ])
-        }
-        if ( oldChannel.bitrate !== newChannel.bitrate ) {//voicechannel ändert die bitrate
-            loggingEmbed.addFields ([
-                { name: "The previous Bitrate", value: oldChannel.bitrate, inline: true },
-                { name: "The new Bitrate", value: newChannel.bitrate, inline: true },
-                { name: "\u200b", value: `\u200b`, inline: true },
-            ])
-        }
-        if ( oldChannel.parent !== newChannel.parent ) {//voicechannel wird in eine andere category verschoben
-            loggingEmbed.addFields ([
-                { name: "The previous Category", value: oldChannel.parent ? oldChannel.parent : "the Channel was uncategorized", inline: true },
-                { name: "The new Category", value:newChannel.parent ?newChannel.parent : "the Channel now is uncategorized", inline: true },
-                { name: "\u200b", value: `\u200b`, inline: true },
-            ])
-        }
-        if ( oldChannel.userLimit !== newChannel.userLimit ) {//voicechannel bekommt ein neues Userlimit
-            loggingEmbed.addFields ([
-                { name: "The previous Userlimit", value: oldChannel.userLimit ? oldChannel.userLimit : "the Channel had no Userlimit", inline: true },
-                { name: "The new Userlimit", value: newChannel.userLimit ? newChannel.userLimit : "the Channel now has no Userlimit", inline: true },
-                { name: "\u200b", value: `\u200b`, inline: true },
-            ])
-        }
-        if ( loggingEmbed.data.fields && loggingEmbed.data.fields.length !== 0 ) {
-            await logChannel.send ({ embeds: [ loggingEmbed ]})
-        } else return
-    }
-    else return
-    await logChannel.send ({ embeds: [ loggingEmbed ]})
-})
+// client.on ( "channelUpdate", async ( oldChannel, newChannel ) => {//wenn ein channel editiert wird
+//     console.log ( "channelUpdate" )
+//     const oldTopic = oldChannel.topic === null ? "" : oldChannel.topic
+//     // const logChannel = await oldChannel.guild.channels.fetch ( "1232776344044179536" )
+//     const logChannel = await oldChannel.guild.channels.fetch ( "1138454567525302362" )
+//     const loggingEmbed = new EmbedBuilder ()
+//     .setColor ( "Yellow" )
+//     if ( oldChannel.type === ChannelType.GuildCategory ) {
+//         if ( oldChannel.name !== newChannel.name ) {//category wird neu benannt
+//             loggingEmbed.setTitle ( "This Category was edited" )
+//             loggingEmbed.addFields ([
+//                 { name: "old Category Name", value: oldChannel.name, inline: true },
+//                 { name: "new Category Name", value: newChannel.name, inline: true },
+//             ])
+//             await logChannel.send ({ embeds: [ loggingEmbed ]})
+//         }
+//     }
+//     else if ( oldChannel.isTextBased ()) {
+//         loggingEmbed.setTitle ( "The Channel was edited" )
+//         if ( oldChannel.name !== newChannel.name ) {//textchannel bekommt neuen name
+//             loggingEmbed.addFields ([
+//                 { name: "Old Name:", value: oldChannel.name, inline: true },
+//                 { name: "New Name:", value: newChannel.name, inline: true },
+//                 { name: "\u200b", value: `\u200b`, inline: true },
+//             ])
+//         }
+//         if ( oldChannel.nsfw !== newChannel.nsfw ) {//textchannel ändert den nsfw status
+//             loggingEmbed.addFields ([
+//                 { name: "Was NSFW turned on in this Channel", value: oldChannel.nsfw, inline: true },
+//                 { name: "Is NSFW now turned on in this Channel", value: newChannel.nsfw, inline: true },
+//                 { name: "\u200b", value: `\u200b`, inline: true },
+//             ])
+//         }
+//         if ( oldChannel.parent !== newChannel.parent ) {//textchannel wird in eine andere category verschoben
+//             loggingEmbed.addFields ([
+//                 { name: "the Old Category", value: oldChannel.parent ? oldChannel.parent : "the Channel was uncategorized", inline: true },
+//                 { name: "the New Category", value: newChannel.parent ? newChannel.parent : "the Channel now is uncategorized", inline: true },
+//                 { name: "\u200b", value: `\u200b`, inline: true },
+//             ])
+//         }
+//         if ( oldChannel.topic !== newChannel.topic ) {//textchannel bekommt eine neue beschreibung
+//             console.log ( newChannel.topic )
+//             console.log ( oldChannel.topic )
+//             loggingEmbed.addFields ([
+//                 { name: "The previous Topic", value: oldChannel.topic ? oldChannel.topic : "there was no Topic", inline: true },
+//                 { name: "The new Topic", value:newChannel.topic ? newChannel.topic : "there now is no Topic", inline: true },
+//                 { name: "\u200b", value: `\u200b`, inline: true },
+//             ])
+//         }
+//         if ( loggingEmbed.data.fields && loggingEmbed.data.fields.length !== 0 ) {
+//             await logChannel.send ({ embeds: [ loggingEmbed ]})
+//         } else return
+//     }
+//     else if ( oldChannel.isVoiceBased ()) {
+//         loggingEmbed.setTitle ( "The Channel was edited" )
+//         if ( oldChannel.name !== newChannel.name ) {//voicechannel bekommt einen neuen namen
+//             loggingEmbed.addFields ([
+//                 { name: "The old Name", value: oldChannel.name, inline: true },
+//                 { name: "The new Name", value: newChannel.name, inline: true },
+//                 { name: "\u200b", value: `\u200b`, inline: true },
+//             ])
+//         }
+//         if ( oldChannel.bitrate !== newChannel.bitrate ) {//voicechannel ändert die bitrate
+//             loggingEmbed.addFields ([
+//                 { name: "The previous Bitrate", value: oldChannel.bitrate, inline: true },
+//                 { name: "The new Bitrate", value: newChannel.bitrate, inline: true },
+//                 { name: "\u200b", value: `\u200b`, inline: true },
+//             ])
+//         }
+//         if ( oldChannel.parent !== newChannel.parent ) {//voicechannel wird in eine andere category verschoben
+//             loggingEmbed.addFields ([
+//                 { name: "The previous Category", value: oldChannel.parent ? oldChannel.parent : "the Channel was uncategorized", inline: true },
+//                 { name: "The new Category", value:newChannel.parent ?newChannel.parent : "the Channel now is uncategorized", inline: true },
+//                 { name: "\u200b", value: `\u200b`, inline: true },
+//             ])
+//         }
+//         if ( oldChannel.userLimit !== newChannel.userLimit ) {//voicechannel bekommt ein neues Userlimit
+//             loggingEmbed.addFields ([
+//                 { name: "The previous Userlimit", value: oldChannel.userLimit ? oldChannel.userLimit : "the Channel had no Userlimit", inline: true },
+//                 { name: "The new Userlimit", value: newChannel.userLimit ? newChannel.userLimit : "the Channel now has no Userlimit", inline: true },
+//                 { name: "\u200b", value: `\u200b`, inline: true },
+//             ])
+//         }
+//         if ( loggingEmbed.data.fields && loggingEmbed.data.fields.length !== 0 ) {
+//             await logChannel.send ({ embeds: [ loggingEmbed ]})
+//         } else return
+//     }
+//     else return
+//     // await logChannel.send ({ embeds: [ loggingEmbed ]})
+// })
 
 client.on ( "guildUpdate", async ( oldGuild, newGuild ) => {//wenn der server editiert wird
     const logChannel = await oldGuild.channels.fetch ( "1232776344044179536" )
