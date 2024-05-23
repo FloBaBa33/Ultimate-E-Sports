@@ -70,7 +70,7 @@ const embeds = [
             new ButtonBuilder ().setCustomId ( "rr-interesse-1234587603521507481" ).setLabel ( "Minecraft" ).setStyle ( ButtonStyle.Success ),
             new ButtonBuilder ().setCustomId ( "rr-interesse-1234587759738359982" ).setLabel ( "Lethal Company" ).setStyle ( ButtonStyle.Primary ),
             new ButtonBuilder ().setCustomId ( "rr-interesse-1234587828525076601" ).setLabel ( "Horror Spiele" ).setStyle ( ButtonStyle.Danger ),
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587759738359982" ).setLabel ( "Agility" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1236036090452775023" ).setLabel ( "Agility" ).setStyle ( ButtonStyle.Primary ),
         ],
         raw: 2,
         size: { 1: 5, 2: 4 },
