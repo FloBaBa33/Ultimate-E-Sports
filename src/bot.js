@@ -50,29 +50,30 @@ const embeds = [
         .setTitle ( "Wähle hier deine Pronomen aus" )
         .setColor ( "Blue" ),
         actionRaw: [
-            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349054346760323" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349143983362080" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Secondary ),
+            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349054346760323" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Danger ),
+            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349143983362080" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Success ),
             new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349180289126410" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
         ],
         raw: 1,
     },
-    {//game reaction role embed
-        name: "reactionRole_game",
+    {//interessen reaction role embed
+        name: "reactionRole_interesse",
         embed: new EmbedBuilder ()
-        .setTitle ( "Wähle hier deine Game-Rollen aus" )
+        .setTitle ( "Wähle hier deine Interessens-Rollen aus" )
         .setColor ( "Blue" ),
         actionRaw: [
-            new ButtonBuilder ().setCustomId ( "rr-game-1227349233359912970" ).setLabel ( "LoL" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-game-1227349262749274193" ).setLabel ( "Valorant" ).setStyle ( ButtonStyle.Secondary ),
-            new ButtonBuilder ().setCustomId ( "rr-game-1227349387559309332" ).setLabel ( "EA FC" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-game-1234587360268652667" ).setLabel ( "Counterstrike" ).setStyle ( ButtonStyle.Secondary ),
-            new ButtonBuilder ().setCustomId ( "rr-game-1234587499528196126" ).setLabel ( "Fortnite" ).setStyle ( ButtonStyle.Secondary ),
-            new ButtonBuilder ().setCustomId ( "rr-game-1234587603521507481" ).setLabel ( "Minecraft" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-game-1234587759738359982" ).setLabel ( "Lethal Company" ).setStyle ( ButtonStyle.Secondary ),
-            new ButtonBuilder ().setCustomId ( "rr-game-1234587828525076601" ).setLabel ( "Horror Spiele" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1227349233359912970" ).setLabel ( "LoL" ).setStyle ( ButtonStyle.Success ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1227349262749274193" ).setLabel ( "Valorant" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1227349387559309332" ).setLabel ( "EA FC" ).setStyle ( ButtonStyle.Danger ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587360268652667" ).setLabel ( "Counterstrike" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587499528196126" ).setLabel ( "Fortnite" ).setStyle ( ButtonStyle.Success ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587603521507481" ).setLabel ( "Minecraft" ).setStyle ( ButtonStyle.Success ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587759738359982" ).setLabel ( "Lethal Company" ).setStyle ( ButtonStyle.Primary ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587828525076601" ).setLabel ( "Horror Spiele" ).setStyle ( ButtonStyle.Danger ),
+            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587759738359982" ).setLabel ( "Agility" ).setStyle ( ButtonStyle.Primary ),
         ],
         raw: 2,
-        size: { 1: 4, 2: 4 },
+        size: { 1: 5, 2: 4 },
     },
     {//pings reaction role embed
         name: "reactionRole_pings",
@@ -81,9 +82,9 @@ const embeds = [
         .setColor ( "Blue" ),
         actionRaw: [
             new ButtonBuilder ().setCustomId ( "rr-ping-1234596961706049596" ).setLabel ( "Spielersuche" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-ping-1234597721948684379" ).setLabel ( "Bumps" ).setStyle ( ButtonStyle.Secondary ),
-            new ButtonBuilder ().setCustomId ( "rr-ping-1234597789057552445" ).setLabel ( "Streams" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-ping-1234597852861300757" ).setLabel ( "Ankündigungen" ).setStyle ( ButtonStyle.Secondary ),
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234597721948684379" ).setLabel ( "Bumps" ).setStyle ( ButtonStyle.Danger ),
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234597789057552445" ).setLabel ( "Streams" ).setStyle ( ButtonStyle.Success ),
+            new ButtonBuilder ().setCustomId ( "rr-ping-1234597852861300757" ).setLabel ( "Ankündigungen" ).setStyle ( ButtonStyle.Primary ),
         ],
         raw: 1
     },
@@ -102,17 +103,24 @@ client.on ( "messageCreate", async ( message ) => {
     if ( message.content.startsWith ( "embed" )) {
         const embed = new EmbedBuilder ().addFields ([
             { name: "1", value: "1", inline: false },
-            { name: "2", value: "2", inline: false },
-            { name: "3", value: "3", inline: false },
-            { name: "4", value: "4", inline: false },
-            { name: "5", value: "5", inline: false },
-            { name: "6", value: "6", inline: false },
-            { name: "7", value: "7", inline: false },
-            { name: "8", value: "8", inline: false },
-            { name: "9", value: "9", inline: false },
-            { name: "10", value: "10", inline: false },
+            // { name: "2", value: "2", inline: false },
+            // { name: "3", value: "3", inline: false },
+            // { name: "4", value: "4", inline: false },
+            // { name: "5", value: "5", inline: false },
+            // { name: "6", value: "6", inline: false },
+            // { name: "7", value: "7", inline: false },
+            // { name: "8", value: "8", inline: false },
+            // { name: "9", value: "9", inline: false },
+            // { name: "10", value: "10", inline: false },
         ])
-        await message.reply ({ embeds: [ embed ]})
+        const raw = new ActionRowBuilder ().addComponents([
+            new ButtonBuilder ().setStyle ( ButtonStyle.Danger ).setCustomId ( "danger" ).setLabel ( "danger" ),
+            new ButtonBuilder ().setStyle ( ButtonStyle.Link ).setLabel ( "link" ).setURL ( "https://www.google.de" ),
+            new ButtonBuilder ().setStyle ( ButtonStyle.Primary ).setCustomId ( "primary" ).setLabel ( "primary" ),
+            new ButtonBuilder ().setStyle ( ButtonStyle.Secondary ).setCustomId ( "secondary" ).setLabel ( "secondary" ),
+            new ButtonBuilder ().setStyle ( ButtonStyle.Success ).setCustomId ( "sucess" ).setLabel ( "sucess" ),
+        ])
+        await message.reply ({ embeds: [ embed ], components: [ raw ]})
         console.log ( embed.data )
     }
 })
@@ -241,7 +249,7 @@ client.on ( "guildMemberAdd", async ( member ) => {//wenn ein member dem server 
     const logChannel = await member.guild.channels.fetch ( "1232382456171200562" )
     const welcomeEmbed = new EmbedBuilder ()
     .setTitle ( `${ member.guild.name }` )
-    .setDescription ( `Willkommen ${ member } auf *__Ultimative E-Sports__*\nwir freuen uns dass Du Dich für unseren Server entschieden hast und wünschen Dir viel Spaß!` )
+    .setDescription ( `Willkommen ${ member } auf *__Ultimative E-Sports__*\nwir freuen uns, dass Du Dich für unseren Server entschieden hast und wünschen Dir viel Spaß!` )
     let createdAt = member.user.createdTimestamp
     createdAt = Math.floor ( createdAt / 1000 )
     const count = member.guild.members.cache.filter (( m ) => !m.user.bot ).size.toString ()
