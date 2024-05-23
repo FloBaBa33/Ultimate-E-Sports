@@ -120,7 +120,7 @@ const embeds = [
         size: { 1: 5, 2: 4 },
     },
     {//pings reaction role embed
-        name: "reactionRole_pings",
+        name: "reactionRole_pings_blau",
         embed: new EmbedBuilder ()
         .setTitle ( "Wähle hier deine Ping-Rollen aus_blau" )
         .setColor ( "Blue" ),
