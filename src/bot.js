@@ -1,5 +1,5 @@
 require ( "dotenv" ).config ()
-const { Client, IntentsBitField, EmbedBuilder, ChannelType, ApplicationCommandOptionType, CommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require ( "discord.js" )
+const { Client, IntentsBitField, EmbedBuilder, ChannelType, ApplicationCommandOptionType, CommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, AuditLogEvent } = require ( "discord.js" )
 const { writeFile } = require ( "fs" )
 
 const client = new Client ({
@@ -337,16 +337,31 @@ client.on ( "guildMemberRemove", async ( member ) => {//wenn ein member den serv
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
-client.on ( "guildBanAdd", async ( ban ) => {//wenn jemand gebannt wird
-    const logChannel = await ban.guild.channels.fetch ( "1232382456171200562" )
-    const loggingEmbed = new EmbedBuilder ()
-    .setTitle ( "Member Banned" )
-    .setColor ( "DarkRed" )
+client.on ( "guildBanAdd", async ({ guild, user }) => {//wenn jemand gebannt wird
+    const banned = await guild.fetchAuditLogs ({
+        type: AuditLogEvent.MemberBanAdd,
+        limit: 1
+    });
+
+    const channel = client.channels.cache.get ( '1138454567525302362' );
+    if ( !channel ) return console.log ( `Channel was not found!` );
+
+    const userbanned = banned.entries.first ();
+
+    const { executor, target, reason } = userbanned; // get the user who banned the user and the user that got banned
+
+    if ( target.id !== user.id ) return console.log ( `Invalid data in the audit logs!` ); // check if the user that got banned in the Audit Logs is the user that is banned
+
+    const embed = new EmbedBuilder ()
+    .setTitle ( `Member Banned` )
     .setDescription ( `${ ban.user } was banned` )
+    .setColor ( "DarkRed" )
     .addFields ([
-        { name: "Reason:", value: `${ ban.reason ? ban.reason : 'no Reason was given' }`, inline: true }
-    ])
-    await logChannel.send ({ embeds: [ loggingEmbed ]})
+        { name: "Offender", value: `${ target.username }`, inline: false },
+        { name: "Moderator", value: `${ executor.username }`, inline: false },
+        { name: "Reason", value: `${ reason }`, inline: false },
+    ]);
+    await channel.send ({ embeds: [ embed ]})
 })
 
 client.on ( "guildBanRemove", async ( ban ) => {// wen ein ban aufgehoben wird
