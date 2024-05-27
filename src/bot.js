@@ -310,7 +310,7 @@ client.on ( "guildBanAdd", async ({ guild, user }) => {//wenn jemand gebannt wir
 
     const embed = new EmbedBuilder ()
     .setTitle ( `Member Banned` )
-    .setDescription ( `${ ban.user } was banned` )
+    .setDescription ( `${ user } was banned` )
     .setColor ( "DarkRed" )
     .addFields ([
         { name: "Offender", value: `${ target.username }`, inline: false },
