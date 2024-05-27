@@ -51,50 +51,6 @@ const embeds = [
         .setTitle ( "Wähle hier deine Pronomen aus" )
         .setColor ( "Blue" ),
         actionRaw: [
-            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349054346760323" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Danger ),
-            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349143983362080" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Success ),
-            new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349180289126410" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
-        ],
-        raw: 1,
-    },
-    {//interessen reaction role embed
-        name: "reactionRole_interesse",
-        embed: new EmbedBuilder ()
-        .setTitle ( "Wähle hier deine Interessens-Rollen aus" )
-        .setColor ( "Blue" ),
-        actionRaw: [
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1227349233359912970" ).setLabel ( "LoL" ).setStyle ( ButtonStyle.Success ),
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1227349262749274193" ).setLabel ( "Valorant" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1227349387559309332" ).setLabel ( "EA FC" ).setStyle ( ButtonStyle.Danger ),
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587360268652667" ).setLabel ( "Counterstrike" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587499528196126" ).setLabel ( "Fortnite" ).setStyle ( ButtonStyle.Success ),
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587603521507481" ).setLabel ( "Minecraft" ).setStyle ( ButtonStyle.Success ),
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587759738359982" ).setLabel ( "Lethal Company" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1234587828525076601" ).setLabel ( "Horror Spiele" ).setStyle ( ButtonStyle.Danger ),
-            new ButtonBuilder ().setCustomId ( "rr-interesse-1236036090452775023" ).setLabel ( "Agility" ).setStyle ( ButtonStyle.Primary ),
-        ],
-        raw: 2,
-        size: { 1: 5, 2: 4 },
-    },
-    {//pings reaction role embed
-        name: "reactionRole_pings",
-        embed: new EmbedBuilder ()
-        .setTitle ( "Wähle hier deine Ping-Rollen aus" )
-        .setColor ( "Blue" ),
-        actionRaw: [
-            new ButtonBuilder ().setCustomId ( "rr-ping-1234596961706049596" ).setLabel ( "Spielersuche" ).setStyle ( ButtonStyle.Primary ),
-            new ButtonBuilder ().setCustomId ( "rr-ping-1234597721948684379" ).setLabel ( "Bumps" ).setStyle ( ButtonStyle.Danger ),
-            new ButtonBuilder ().setCustomId ( "rr-ping-1234597789057552445" ).setLabel ( "Streams" ).setStyle ( ButtonStyle.Success ),
-            new ButtonBuilder ().setCustomId ( "rr-ping-1234597852861300757" ).setLabel ( "Ankündigungen" ).setStyle ( ButtonStyle.Primary ),
-        ],
-        raw: 1
-    },
-    {//pronoun reaction role embed
-        name: "reactionRole_pronoun_blau",
-        embed: new EmbedBuilder ()
-        .setTitle ( "Wähle hier deine Pronomen aus" )
-        .setColor ( "Blue" ),
-        actionRaw: [
             new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349054346760323" ).setLabel ( "He/Him" ).setStyle ( ButtonStyle.Primary ),
             new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349143983362080" ).setLabel ( "She/Her" ).setStyle ( ButtonStyle.Primary ),
             new ButtonBuilder ().setCustomId ( "rr-pronouns-1227349180289126410" ).setLabel ( "They/Them" ).setStyle ( ButtonStyle.Primary )
@@ -102,7 +58,7 @@ const embeds = [
         raw: 1,
     },
     {//interessen reaction role embed
-        name: "reactionRole_interesse_blau",
+        name: "reactionRole_interesse",
         embed: new EmbedBuilder ()
         .setTitle ( "Wähle hier deine Interessens-Rollen aus" )
         .setColor ( "Blue" ),
@@ -121,9 +77,9 @@ const embeds = [
         size: { 1: 5, 2: 4 },
     },
     {//pings reaction role embed
-        name: "reactionRole_pings_blau",
+        name: "reactionRole_pings",
         embed: new EmbedBuilder ()
-        .setTitle ( "Wähle hier deine Ping-Rollen aus_blau" )
+        .setTitle ( "Wähle hier deine Ping-Rollen aus" )
         .setColor ( "Blue" ),
         actionRaw: [
             new ButtonBuilder ().setCustomId ( "rr-ping-1234596961706049596" ).setLabel ( "Spielersuche" ).setStyle ( ButtonStyle.Primary ),
@@ -139,13 +95,13 @@ client.login ( process.env.TOKEN )
 
 client.on ( "messageCreate", async ( message ) => {
     if ( message.author.id !== "607910928897540105" ) return
-    if ( message.content.startsWith ( "simjoin" )) {
+    if ( message.content.startsWith ( "..simjoin" )) {
         client.emit ( "guildMemberAdd", message.member )
     }
-    if ( message.content.startsWith ( "simleave" )) {
+    if ( message.content.startsWith ( "..simleave" )) {
         client.emit ( "guildMemberRemove", message.member )
     }
-    if ( message.content.startsWith ( "embed" )) {
+    if ( message.content.startsWith ( "..embed" )) {
         const embed = new EmbedBuilder ().addFields ([
             { name: "1", value: "1", inline: false },
             // { name: "2", value: "2", inline: false },
