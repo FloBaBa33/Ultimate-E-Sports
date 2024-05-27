@@ -299,7 +299,7 @@ client.on ( "guildBanAdd", async ({ guild, user }) => {//wenn jemand gebannt wir
         limit: 1
     });
 
-    const channel = client.channels.cache.get ( '1138454567525302362' );
+    const channel = client.channels.cache.get ( '1232382456171200562' );
     if ( !channel ) return console.log ( `Channel was not found!` );
 
     const userbanned = banned.entries.first ();
