@@ -279,7 +279,7 @@ client.on ( "guildMemberRemove", async ( member ) => {//wenn ein member den serv
     let countString = count.endsWith ( "1" ) ? `${ count }st` : count.endsWith ( "2" ) ? `${ count }nd` : count.endsWith ( "3" ) ? `${ count }rd` : `${ count }th`
     const goodByeEmbed = new EmbedBuilder ()
     .setTitle ( `${ member.guild.name }` )
-    .setDescription ( `Auf wiedersehen ${ member.user.displayName }, viel Erfolg auf deinem Weg` )
+    .setDescription ( `Auf wiedersehen ${ member.user.displayName }, viel Erfolg auf deinem Weg!` )
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Member Left" )
     .setColor ( "Red" )
