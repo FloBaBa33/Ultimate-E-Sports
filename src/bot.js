@@ -403,7 +403,7 @@ client.on ( "channelCreate", async ( channel ) => {//wenn ein channel erstellt w
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Channel Created" )
     .setColor ( "Green" )
-    .setDescription ( "a new Channel was created" )
+    .setDescription ( `a new Channel was created\n${ channel }` )
     .addFields ([
         { name: "Channel Name", value: channel.name, inline: true }
     ])
@@ -412,18 +412,18 @@ client.on ( "channelCreate", async ( channel ) => {//wenn ein channel erstellt w
     }
     if ( channel.isTextBased ()) {
         loggingEmbed.addFields ([
-            { name: "the Type of Channel", value: channel.type, inline: true },
-            { name: "is nsfw switched on?", value: channel.nsfw, inline: true },
-            { name: "the Category the Channel is in", value: channel.parent ? channel.parent.name : "unnested Channel", inline: true },
-            { name: "the Topic of the Channel", value: channel.topic ? channel.topic : "there currently isn't a Channel Topic", inline: true },
+            { name: "the Type of Channel", value: `${ ChannelType [ channel.type ]}`, inline: true },
+            { name: "is nsfw switched on?", value: `${ channel.nsfw }`, inline: true },
+            { name: "the Category the Channel is in", value: channel.parent ? `${ channel.parent.name }` : "unnested Channel", inline: true },
+            { name: "the Topic of the Channel", value: channel.topic ? `${ channel.topic }` : "there currently isn't a Channel Topic", inline: true },
         ])
     }
     if ( channel.isVoiceBased ()) {
         loggingEmbed.addFields ([
-            { name: "the Type of Channel", value: channel.type, inline: true },
-            { name: "the Bitrate for the Channel", value: channel.bitrate, inline: true },
-            { name: "the Category the Channel is in", value: channel.parent ? channel.parent.name : "unnested Channel", inline: true },
-            { name: "the current Userlimit for this Channel", value: channel.userLimit, inline: true },
+            { name: "the Type of Channel", value: `${ ChannelType [ channel.type ]}`, inline: true },
+            { name: "the Bitrate for the Channel", value: `${ channel.bitrate }`, inline: true },
+            { name: "the Category the Channel is in", value: channel.parent ? `${ channel.parent.name }` : "unnested Channel", inline: true },
+            { name: "the current Userlimit for this Channel", value: `${ channel.userLimit }`, inline: true },
         ])
     }
     await logChannel.send ({ embeds: [ loggingEmbed ]})
@@ -434,7 +434,7 @@ client.on ( "channelDelete", async ( channel ) => {//wenn ein channel gelöscht 
     const loggingEmbed = new EmbedBuilder ()
     .setTitle ( "Channel Deleted" )
     .setColor ( "Red" )
-    .setDescription ( `The channel ${ channel.name } was created` )
+    .setDescription ( `The channel ${ channel.name } was deleted` )
     await logChannel.send ({ embeds: [ loggingEmbed ]})
 })
 
